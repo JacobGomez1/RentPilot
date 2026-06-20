@@ -1,0 +1,7 @@
+id,name,price,bedrooms,bathrooms,city,pool,gym,parking,pet_friendly
+1,Downtown Modern Loft,1800,1,1,Austin,Yes,Yes,Yes,Yes
+2,Uptown Spacious Apartment,2400,2,2,Austin,Yes,Yes,No,Yes
+3,Budget Studio,1200,0,1,Austin,No,No,No,No
+4,Luxury High Rise,3200,3,2,Austin,Yes,Yes,Yes,Yes
+5,South Austin Apartment,1700,1,1,Austin,No,Yes,Yes,Yes
+6,Tech Ridge Townhome,2100,2,2,Austin,Yes,No,Yes,Yes
