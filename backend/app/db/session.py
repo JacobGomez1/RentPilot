@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from app.core.config import DATABASE_URL
 
-# PostgreSQL engine (NO SQLite args)
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True

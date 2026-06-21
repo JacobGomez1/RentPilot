@@ -1,48 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 
-from app.db.session import SessionLocal
+from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserResponse
 from app.models.user import User
-from app.core.security import (
-    hash_password,
-    verify_password,
-    create_access_token
-)
-from app.core.deps import get_current_user
-
+from app.db.deps import get_db
+from app.core.security import hash_password, verify_password, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-# -----------------------
-# DB SESSION
-# -----------------------
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-# -----------------------
-# REQUEST SCHEMAS
-# -----------------------
-class RegisterRequest(BaseModel):
-    email: str
-    password: str
-
-
-class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-
-# -----------------------
-# REGISTER
-# -----------------------
-@router.post("/register")
+@router.post("/register", response_model=TokenResponse)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
     existing = db.query(User).filter(User.email == payload.email).first()
@@ -66,10 +33,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     }
 
 
-# -----------------------
-# LOGIN
-# -----------------------
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.email == payload.email).first()
@@ -85,12 +49,13 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     }
 
 
-# -----------------------
-# CURRENT USER
-# -----------------------
-@router.get("/me")
-def get_me(current_user: User = Depends(get_current_user)):
-    return {
-        "id": current_user.id,
-        "email": current_user.email
-    }
+@router.get("/me", response_model=UserResponse)
+def get_me(db: Session = Depends(get_db)):
+
+    # TEMP SIMPLE VERSION (Phase 3.4 we secure this with JWT dependency)
+    user = db.query(User).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="No user found")
+
+    return user
